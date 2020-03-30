@@ -1,26 +1,67 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import TodoItem from './TodoItem';
+import Form from './Form'
+import todosData from './todosData.js';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+class App extends React.Component {
+ state = {
+      todos: todosData,
+    }
+
+
+  handleSubmit = value => {
+    const newTodos = this.state.todos.concat({
+          id: this.state.todos.length + 1,
+          text: value,
+          completed: false,
+          remove: false
+        })
+    this.setState({
+        todos: newTodos
+      })
+  }
+  handleChange = id => {
+        this.setState(prevState => {
+            const updatedTodos = prevState.todos.map(todo => {
+                if (todo.id === id) {
+                    todo.completed = !todo.completed
+                }
+                return todo
+            })
+            return {
+                todos: updatedTodos
+            }
+        })
+    }
+
+    handleClick = id => {
+      this.setState(prevState => {
+        const newTodo = prevState.todos.map(todo => {
+          if (todo.id === id){
+            todo.remove = true
+          }
+          return todo
+        })
+        return {
+          todos: newTodo
+        }
+      })
+    }
+
+  render(props){
+    const todoItems = this.state.todos.map(item => {
+      return (item.remove == false ? <TodoItem key={item.id} item={item} handleChange={this.handleChange} handleClick= {this.handleClick}/> : null)
+    })
+    console.log(this.state.todos)
+    return (
+      <div className='todo-list'>
+        <Form handleSubmit={this.handleSubmit} />
+        {todoItems}
+      </div>
+    );
+  }
 }
 
 export default App;
